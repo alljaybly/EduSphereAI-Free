@@ -35,7 +35,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { hasActiveSubscription } from '../lib/paypal.js';
 import { getCurrentUserId, isUserAuthenticated, safeJsonParse } from '../lib/authUtils';
-import { supabase } from '../lib/supabase';
+import { supabaseHelpers } from '../lib/apiClient';
 import confetti from 'canvas-confetti';
 
 /**
@@ -134,25 +134,11 @@ const PlayLearnPage: React.FC = () => {
         return;
       }
 
-      // Load achievements
-      const { data: achievements, error: achievementsError } = await supabase
-        .from('user_achievements')
-        .select('*')
-        .eq('user_id', userId);
+      // Load achievements using our API client
+      const achievements = await supabaseHelpers.getUserAchievements(userId);
 
-      if (achievementsError && achievementsError.code !== '42501') {
-        console.error('Error loading achievements:', achievementsError);
-      }
-
-      // Load progress
-      const { data: progress, error: progressError } = await supabase
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', userId);
-
-      if (progressError && progressError.code !== '42501') {
-        console.error('Error loading progress:', progressError);
-      }
+      // Load progress using our API client
+      const progress = await supabaseHelpers.getUserProgress(userId);
 
       // Calculate stats from loaded data
       const totalProblems = progress?.reduce((sum, p) => sum + (p.total_attempted || 0), 0) || 0;
@@ -183,34 +169,33 @@ const PlayLearnPage: React.FC = () => {
   };
 
   /**
-   * Handle premium feature access
+   * Handle feature access (all features are free)
    */
-  const handlePremiumFeature = (feature: string) => {
-    if (isPremium) {
-      // Navigate to premium feature
-      switch (feature) {
-        case 'ar-problems':
-          navigate('/ar-problems');
-          break;
-        case 'live-code':
-          navigate('/live-code');
-          break;
-        case 'story-mode':
-          navigate('/story-mode');
-          break;
-        case 'teacher-dashboard':
-          navigate('/teacher-dashboard');
-          break;
-        default:
-          console.warn('Unknown premium feature:', feature);
-      }
-    } else {
-      setShowPremiumModal(true);
+  const handleFeatureAccess = (feature: string) => {
+    // Navigate to feature - all features are free
+    switch (feature) {
+      case 'ar-problems':
+        navigate('/ar-problems');
+        break;
+      case 'live-code':
+        navigate('/live-code');
+        break;
+      case 'story-mode':
+        navigate('/story-mode');
+        break;
+      case 'teacher-dashboard':
+        navigate('/teacher-dashboard');
+        break;
+      case 'voice-recognition':
+        navigate('/voice-quiz');
+        break;
+      default:
+        console.warn('Unknown feature:', feature);
     }
   };
 
   /**
-   * Handle subscription upgrade
+   * Handle subscription upgrade (all features are now free)
    */
   const handleUpgrade = () => {
     // Trigger confetti effect
@@ -220,9 +205,10 @@ const PlayLearnPage: React.FC = () => {
       origin: { y: 0.6 }
     });
 
-    // Navigate to payment/subscription page
-    // This would typically open PayPal subscription flow
-    window.open('https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-5ML4271244454362WXNWU5NQ', '_blank');
+    // All features are now free - just set premium status
+    setIsPremium(true);
+    setShowPremiumModal(false);
+    setShowSuccessModal(true);
   };
 
   // Feature cards data
@@ -242,8 +228,8 @@ const PlayLearnPage: React.FC = () => {
       description: 'Augmented reality problem solving experience',
       icon: Zap,
       color: 'from-purple-500 to-purple-600',
-      isPremium: true,
-      action: () => handlePremiumFeature('ar-problems')
+      isPremium: false,
+      action: () => handleFeatureAccess('ar-problems')
     },
     {
       id: 'live-code',
@@ -251,8 +237,8 @@ const PlayLearnPage: React.FC = () => {
       description: 'Real-time collaborative coding sessions',
       icon: Code,
       color: 'from-green-500 to-green-600',
-      isPremium: true,
-      action: () => handlePremiumFeature('live-code')
+      isPremium: false,
+      action: () => handleFeatureAccess('live-code')
     },
     {
       id: 'story-mode',
@@ -260,8 +246,8 @@ const PlayLearnPage: React.FC = () => {
       description: 'Interactive storytelling with AI narration',
       icon: BookOpen,
       color: 'from-pink-500 to-pink-600',
-      isPremium: true,
-      action: () => handlePremiumFeature('story-mode')
+      isPremium: false,
+      action: () => handleFeatureAccess('story-mode')
     },
     {
       id: 'teacher-dashboard',
@@ -269,8 +255,8 @@ const PlayLearnPage: React.FC = () => {
       description: 'Monitor student progress and assign tasks',
       icon: Users,
       color: 'from-orange-500 to-orange-600',
-      isPremium: true,
-      action: () => handlePremiumFeature('teacher-dashboard')
+      isPremium: false,
+      action: () => handleFeatureAccess('teacher-dashboard')
     },
     {
       id: 'voice-recognition',
@@ -278,8 +264,8 @@ const PlayLearnPage: React.FC = () => {
       description: 'Speech recognition and pronunciation practice',
       icon: Mic,
       color: 'from-teal-500 to-teal-600',
-      isPremium: true,
-      action: () => handlePremiumFeature('voice-recognition')
+      isPremium: false,
+      action: () => handleFeatureAccess('voice-recognition')
     }
   ];
 

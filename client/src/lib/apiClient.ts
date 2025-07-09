@@ -28,226 +28,17 @@ async function apiRequest<T>(
   return response.json();
 }
 
-// User preferences
-export const userPreferencesAPI = {
-  async get(userId: string) {
-    return apiRequest(`/api/user-preferences/${userId}`);
-  },
-
-  async update(preferences: any) {
-    return apiRequest('/api/user-preferences', {
-      method: 'POST',
-      body: JSON.stringify(preferences),
-    });
-  },
-};
-
-// User progress
-export const userProgressAPI = {
-  async get(userId: string, subject?: string, grade?: string) {
-    const params = new URLSearchParams();
-    if (subject) params.append('subject', subject);
-    if (grade) params.append('grade', grade);
-    
-    const query = params.toString() ? `?${params.toString()}` : '';
-    return apiRequest(`/api/user-progress/${userId}${query}`);
-  },
-
-  async update(progress: any) {
-    return apiRequest('/api/user-progress', {
-      method: 'POST',
-      body: JSON.stringify(progress),
-    });
-  },
-};
-
-// User achievements
-export const userAchievementsAPI = {
-  async get(userId: string) {
-    return apiRequest(`/api/user-achievements/${userId}`);
-  },
-
-  async award(achievement: any) {
-    return apiRequest('/api/user-achievements', {
-      method: 'POST',
-      body: JSON.stringify(achievement),
-    });
-  },
-};
-
-// Shared content
-export const sharedContentAPI = {
-  async get(limit = 20) {
-    return apiRequest(`/api/shared-content?limit=${limit}`);
-  },
-
-  async share(content: any) {
-    return apiRequest('/api/shared-content', {
-      method: 'POST',
-      body: JSON.stringify(content),
-    });
-  },
-};
-
-// Tutor scripts
-export const tutorScriptsAPI = {
-  async get(filters: { tone?: string; grade?: string; subject?: string } = {}) {
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) params.append(key, value);
-    });
-    
-    const query = params.toString() ? `?${params.toString()}` : '';
-    return apiRequest(`/api/tutor-scripts${query}`);
-  },
-
-  async save(script: any) {
-    return apiRequest('/api/tutor-scripts', {
-      method: 'POST',
-      body: JSON.stringify(script),
-    });
-  },
-};
-
-// Coding problems
-export const codingProblemsAPI = {
-  async get(language?: string, difficulty?: string) {
-    const params = new URLSearchParams();
-    if (language) params.append('language', language);
-    if (difficulty) params.append('difficulty', difficulty);
-    
-    const query = params.toString() ? `?${params.toString()}` : '';
-    return apiRequest(`/api/coding-problems${query}`);
-  },
-
-  async save(problem: any) {
-    return apiRequest('/api/coding-problems', {
-      method: 'POST',
-      body: JSON.stringify(problem),
-    });
-  },
-};
-
-// AR problems
-export const arProblemsAPI = {
-  async get(subject?: string, grade?: string) {
-    const params = new URLSearchParams();
-    if (subject) params.append('subject', subject);
-    if (grade) params.append('grade', grade);
-    
-    const query = params.toString() ? `?${params.toString()}` : '';
-    return apiRequest(`/api/ar-problems${query}`);
-  },
-
-  async save(problem: any) {
-    return apiRequest('/api/ar-problems', {
-      method: 'POST',
-      body: JSON.stringify(problem),
-    });
-  },
-};
-
-// Stories
-export const storiesAPI = {
-  async get(language?: string, gradeLevel?: string) {
-    const params = new URLSearchParams();
-    if (language) params.append('language', language);
-    if (gradeLevel) params.append('gradeLevel', gradeLevel);
-    
-    const query = params.toString() ? `?${params.toString()}` : '';
-    return apiRequest(`/api/stories${query}`);
-  },
-
-  async save(story: any) {
-    return apiRequest('/api/stories', {
-      method: 'POST',
-      body: JSON.stringify(story),
-    });
-  },
-};
-
-// Voice quizzes
-export const voiceQuizzesAPI = {
-  async get(language?: string, difficulty?: string, subject?: string) {
-    const params = new URLSearchParams();
-    if (language) params.append('language', language);
-    if (difficulty) params.append('difficulty', difficulty);
-    if (subject) params.append('subject', subject);
-    
-    const query = params.toString() ? `?${params.toString()}` : '';
-    return apiRequest(`/api/voice-quizzes${query}`);
-  },
-
-  async save(quiz: any) {
-    return apiRequest('/api/voice-quizzes', {
-      method: 'POST',
-      body: JSON.stringify(quiz),
-    });
-  },
-};
-
-// Collaborative sessions
-export const collaborativeSessionsAPI = {
-  async get(sessionId: string) {
-    return apiRequest(`/api/collaborative-sessions/${sessionId}`);
-  },
-
-  async create(session: any) {
-    return apiRequest('/api/collaborative-sessions', {
-      method: 'POST',
-      body: JSON.stringify(session),
-    });
-  },
-
-  async update(sessionId: string, updates: any) {
-    return apiRequest(`/api/collaborative-sessions/${sessionId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(updates),
-    });
-  },
-
-  async getParticipants(sessionId: string) {
-    return apiRequest(`/api/collaborative-sessions/${sessionId}/participants`);
-  },
-
-  async addParticipant(sessionId: string, participant: any) {
-    return apiRequest(`/api/collaborative-sessions/${sessionId}/participants`, {
-      method: 'POST',
-      body: JSON.stringify(participant),
-    });
-  },
-
-  async getMessages(sessionId: string) {
-    return apiRequest(`/api/collaborative-sessions/${sessionId}/messages`);
-  },
-
-  async sendMessage(sessionId: string, message: any) {
-    return apiRequest(`/api/collaborative-sessions/${sessionId}/messages`, {
-      method: 'POST',
-      body: JSON.stringify(message),
-    });
-  },
-};
-
-// Legacy compatibility layer - provides the same interface as supabaseHelpers
+// Supabase-compatible helpers for seamless migration
 export const supabaseHelpers = {
   /**
-   * Get user preferences with defaults
+   * Get user preferences
    */
   async getUserPreferences(userId: string) {
     try {
-      return await userPreferencesAPI.get(userId);
+      return await apiRequest(`/api/user-preferences/${userId}`);
     } catch (error) {
       console.error('Error fetching user preferences:', error);
-      // Return defaults if fetch fails
-      return {
-        user_id: userId,
-        preferred_subject: 'math',
-        preferred_difficulty: 2,
-        preferred_language: 'en',
-        learning_style: 'visual',
-        daily_goal_minutes: 30
-      };
+      return null;
     }
   },
 
@@ -256,11 +47,45 @@ export const supabaseHelpers = {
    */
   async updateUserPreferences(preferences: any) {
     try {
-      await userPreferencesAPI.update(preferences);
-      return true;
+      return await apiRequest('/api/user-preferences', {
+        method: 'POST',
+        body: JSON.stringify(preferences),
+      });
     } catch (error) {
       console.error('Error updating user preferences:', error);
-      return false;
+      return null;
+    }
+  },
+
+  /**
+   * Get user progress
+   */
+  async getUserProgress(userId: string, subject?: string, grade?: string) {
+    try {
+      const params = new URLSearchParams();
+      if (subject) params.append('subject', subject);
+      if (grade) params.append('grade', grade);
+      
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return await apiRequest(`/api/user-progress/${userId}${query}`);
+    } catch (error) {
+      console.error('Error fetching user progress:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Update user progress
+   */
+  async updateUserProgress(progress: any) {
+    try {
+      return await apiRequest('/api/user-progress', {
+        method: 'POST',
+        body: JSON.stringify(progress),
+      });
+    } catch (error) {
+      console.error('Error updating user progress:', error);
+      return null;
     }
   },
 
@@ -269,7 +94,7 @@ export const supabaseHelpers = {
    */
   async getUserAchievements(userId: string) {
     try {
-      return await userAchievementsAPI.get(userId);
+      return await apiRequest(`/api/user-achievements/${userId}`);
     } catch (error) {
       console.error('Error fetching user achievements:', error);
       return [];
@@ -277,15 +102,17 @@ export const supabaseHelpers = {
   },
 
   /**
-   * Award achievement to user
+   * Award achievement
    */
   async awardAchievement(achievement: any) {
     try {
-      await userAchievementsAPI.award(achievement);
-      return true;
+      return await apiRequest('/api/user-achievements', {
+        method: 'POST',
+        body: JSON.stringify(achievement),
+      });
     } catch (error) {
       console.error('Error awarding achievement:', error);
-      return false;
+      return null;
     }
   },
 
@@ -294,7 +121,7 @@ export const supabaseHelpers = {
    */
   async getSharedContent(limit = 20) {
     try {
-      return await sharedContentAPI.get(limit);
+      return await apiRequest(`/api/shared-content?limit=${limit}`);
     } catch (error) {
       console.error('Error fetching shared content:', error);
       return [];
@@ -306,8 +133,10 @@ export const supabaseHelpers = {
    */
   async shareContent(content: any) {
     try {
-      const result = await sharedContentAPI.share(content);
-      return result.id || null;
+      return await apiRequest('/api/shared-content', {
+        method: 'POST',
+        body: JSON.stringify(content),
+      });
     } catch (error) {
       console.error('Error sharing content:', error);
       return null;
@@ -319,7 +148,13 @@ export const supabaseHelpers = {
    */
   async getTutorScripts(filters: { tone?: string; grade?: string; subject?: string } = {}) {
     try {
-      return await tutorScriptsAPI.get(filters);
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) params.append(key, value);
+      });
+      
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return await apiRequest(`/api/tutor-scripts${query}`);
     } catch (error) {
       console.error('Error fetching tutor scripts:', error);
       return [];
@@ -331,40 +166,241 @@ export const supabaseHelpers = {
    */
   async saveTutorScript(script: any) {
     try {
-      const result = await tutorScriptsAPI.save(script);
-      return result.id || null;
+      return await apiRequest('/api/tutor-scripts', {
+        method: 'POST',
+        body: JSON.stringify(script),
+      });
     } catch (error) {
       console.error('Error saving tutor script:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Get coding problems
+   */
+  async getCodingProblems(language?: string, difficulty?: string) {
+    try {
+      const params = new URLSearchParams();
+      if (language) params.append('language', language);
+      if (difficulty) params.append('difficulty', difficulty);
+      
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return await apiRequest(`/api/coding-problems${query}`);
+    } catch (error) {
+      console.error('Error fetching coding problems:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Save coding problem
+   */
+  async saveCodingProblem(problem: any) {
+    try {
+      return await apiRequest('/api/coding-problems', {
+        method: 'POST',
+        body: JSON.stringify(problem),
+      });
+    } catch (error) {
+      console.error('Error saving coding problem:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Get AR problems
+   */
+  async getARProblems(subject?: string, grade?: string) {
+    try {
+      const params = new URLSearchParams();
+      if (subject) params.append('subject', subject);
+      if (grade) params.append('grade', grade);
+      
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return await apiRequest(`/api/ar-problems${query}`);
+    } catch (error) {
+      console.error('Error fetching AR problems:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Save AR problem
+   */
+  async saveARProblem(problem: any) {
+    try {
+      return await apiRequest('/api/ar-problems', {
+        method: 'POST',
+        body: JSON.stringify(problem),
+      });
+    } catch (error) {
+      console.error('Error saving AR problem:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Get stories
+   */
+  async getStories(language?: string, gradeLevel?: string) {
+    try {
+      const params = new URLSearchParams();
+      if (language) params.append('language', language);
+      if (gradeLevel) params.append('grade_level', gradeLevel);
+      
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return await apiRequest(`/api/stories${query}`);
+    } catch (error) {
+      console.error('Error fetching stories:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Save story
+   */
+  async saveStory(story: any) {
+    try {
+      return await apiRequest('/api/stories', {
+        method: 'POST',
+        body: JSON.stringify(story),
+      });
+    } catch (error) {
+      console.error('Error saving story:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Get voice quizzes
+   */
+  async getVoiceQuizzes(language?: string, difficulty?: string, subject?: string) {
+    try {
+      const params = new URLSearchParams();
+      if (language) params.append('language', language);
+      if (difficulty) params.append('difficulty', difficulty);
+      if (subject) params.append('subject', subject);
+      
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return await apiRequest(`/api/voice-quizzes${query}`);
+    } catch (error) {
+      console.error('Error fetching voice quizzes:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Save voice quiz
+   */
+  async saveVoiceQuiz(quiz: any) {
+    try {
+      return await apiRequest('/api/voice-quizzes', {
+        method: 'POST',
+        body: JSON.stringify(quiz),
+      });
+    } catch (error) {
+      console.error('Error saving voice quiz:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Get collaborative session
+   */
+  async getCollaborativeSession(sessionId: string) {
+    try {
+      return await apiRequest(`/api/collaborative-sessions/${sessionId}`);
+    } catch (error) {
+      console.error('Error fetching collaborative session:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Create collaborative session
+   */
+  async createCollaborativeSession(session: any) {
+    try {
+      return await apiRequest('/api/collaborative-sessions', {
+        method: 'POST',
+        body: JSON.stringify(session),
+      });
+    } catch (error) {
+      console.error('Error creating collaborative session:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Update collaborative session
+   */
+  async updateCollaborativeSession(sessionId: string, updates: any) {
+    try {
+      return await apiRequest(`/api/collaborative-sessions/${sessionId}`, {
+        method: 'PUT',
+        body: JSON.stringify(updates),
+      });
+    } catch (error) {
+      console.error('Error updating collaborative session:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Get session participants
+   */
+  async getSessionParticipants(sessionId: string) {
+    try {
+      return await apiRequest(`/api/session-participants/${sessionId}`);
+    } catch (error) {
+      console.error('Error fetching session participants:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Add session participant
+   */
+  async addSessionParticipant(participant: any) {
+    try {
+      return await apiRequest('/api/session-participants', {
+        method: 'POST',
+        body: JSON.stringify(participant),
+      });
+    } catch (error) {
+      console.error('Error adding session participant:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Get chat messages
+   */
+  async getChatMessages(sessionId: string) {
+    try {
+      return await apiRequest(`/api/chat-messages/${sessionId}`);
+    } catch (error) {
+      console.error('Error fetching chat messages:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Save chat message
+   */
+  async saveChatMessage(message: any) {
+    try {
+      return await apiRequest('/api/chat-messages', {
+        method: 'POST',
+        body: JSON.stringify(message),
+      });
+    } catch (error) {
+      console.error('Error saving chat message:', error);
       return null;
     }
   }
 };
 
-// Export specific APIs
-export {
-  userPreferencesAPI,
-  userProgressAPI,
-  userAchievementsAPI,
-  sharedContentAPI,
-  tutorScriptsAPI,
-  codingProblemsAPI,
-  arProblemsAPI,
-  storiesAPI,
-  voiceQuizzesAPI,
-  collaborativeSessionsAPI,
-};
-
-// Default export for compatibility
-export default {
-  supabaseHelpers,
-  userPreferencesAPI,
-  userProgressAPI,
-  userAchievementsAPI,
-  sharedContentAPI,
-  tutorScriptsAPI,
-  codingProblemsAPI,
-  arProblemsAPI,
-  storiesAPI,
-  voiceQuizzesAPI,
-  collaborativeSessionsAPI,
-};
+// Export default for compatibility
+export default supabaseHelpers;
