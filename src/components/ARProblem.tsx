@@ -500,35 +500,7 @@ const ARProblem: React.FC = () => {
     );
   }
 
-  if (!isPremium) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center p-6">
-        <motion.div
-          className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-        >
-          <Lock className="mx-auto mb-6 text-gray-400" size={64} />
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Premium Feature</h2>
-          <p className="text-gray-600 mb-6">
-            AR Problems require a premium subscription to access advanced augmented reality learning experiences.
-          </p>
-          <div className="space-y-3">
-            <button
-              onClick={() => setShowPaymentModal(true)}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all"
-            >
-              <Crown className="inline mr-2" size={20} />
-              Upgrade to Premium
-            </button>
-            <button
-              onClick={() => navigate('/play-learn')}
-              className="w-full text-gray-600 py-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              Back to Play & Learn
-            </button>
-          </div>
-        </motion.div>
+  // All features are free - no premium check needed
 
         {/* Payment Modal */}
         <PaymentModal 

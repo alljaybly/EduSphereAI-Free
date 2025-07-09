@@ -45,10 +45,10 @@ import confetti from 'canvas-confetti';
  */
 const PlayLearnPage: React.FC = () => {
   const navigate = useNavigate();
-  
+
   // State management
   const [isLoading, setIsLoading] = useState(true);
-  const [isPremium, setIsPremium] = useState(false);
+  const [isPremium, setIsPremium] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userStats, setUserStats] = useState({
     totalProblems: 0,
@@ -126,7 +126,7 @@ const PlayLearnPage: React.FC = () => {
   const loadUserStats = async () => {
     try {
       const userId = await getCurrentUserId();
-      
+
       // Only attempt to load stats for authenticated users
       const authStatus = await isUserAuthenticated();
       if (!authStatus) {
@@ -311,7 +311,7 @@ const PlayLearnPage: React.FC = () => {
                 <p className="text-gray-600">Learn Without Limits</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               {isPremium && (
                 <div className="flex items-center bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 px-3 py-1 rounded-full">
@@ -319,7 +319,7 @@ const PlayLearnPage: React.FC = () => {
                   <span className="text-sm font-medium">Premium</span>
                 </div>
               )}
-              
+
               <motion.button
                 onClick={() => navigate('/login')}
                 className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
@@ -417,21 +417,16 @@ const PlayLearnPage: React.FC = () => {
                   </div>
                 )}
               </div>
-              
+
               <div className="p-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-2">{feature.title}</h3>
                 <p className="text-gray-600 mb-4">{feature.description}</p>
-                
+
                 <motion.button
-                  onClick={feature.action}
-                  className={`w-full py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center ${
-                    feature.isPremium && !isPremium
-                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                      : `bg-gradient-to-r ${feature.color} text-white hover:shadow-lg`
-                  }`}
-                  whileHover={feature.isPremium && !isPremium ? {} : { scale: 1.05 }}
-                  whileTap={feature.isPremium && !isPremium ? {} : { scale: 0.95 }}
-                  disabled={feature.isPremium && !isPremium}
+                  onClick={() => feature.action()}
+                  className={`w-full py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center bg-gradient-to-r ${feature.color} text-white hover:shadow-lg`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   {feature.isPremium && !isPremium ? (
                     <>

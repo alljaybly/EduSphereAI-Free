@@ -12,7 +12,7 @@ interface AppState {
   userProgress: UserProgress;
   showBookCover: boolean;
   activeTab: 'main' | 'matric' | 'promptmaster' | 'playlearn';
-  
+
   setSubject: (subject: SubjectType) => void;
   setGrade: (grade: GradeType) => void;
   toggleHint: () => void;
@@ -69,7 +69,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setSubject: (subject) => set({ currentSubject: subject }),
   setGrade: (grade) => set({ currentGrade: grade }),
   toggleHint: () => set((state) => ({ showHint: !state.showHint })),
-  
+
   generateNewProblem: () => {
     const { currentSubject, currentGrade } = get();
     if (currentSubject && currentGrade) {
@@ -82,15 +82,15 @@ export const useAppStore = create<AppState>((set, get) => ({
       });
     }
   },
-  
+
   setUserAnswer: (answer) => set({ userAnswer: answer }),
-  
+
   checkAnswer: () => {
     const { currentProblem, userAnswer, currentSubject, currentGrade } = get();
     if (!currentProblem || !currentSubject || !currentGrade) return;
-    
+
     let isCorrect = false;
-    
+
     if (currentSubject === 'math' || currentSubject === 'physics') {
       const userNumeric = parseFloat(userAnswer);
       const correctNumeric = parseFloat(currentProblem.answer);
@@ -100,9 +100,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     } else {
       isCorrect = userAnswer.trim().toLowerCase() === currentProblem.answer.trim().toLowerCase();
     }
-    
+
     set({ isCorrect });
-    
+
     const record: ProgressRecord = {
       timestamp: Date.now(),
       subject: currentSubject,
@@ -112,34 +112,34 @@ export const useAppStore = create<AppState>((set, get) => ({
       userAnswer: userAnswer,
       correctAnswer: currentProblem.answer,
     };
-    
+
     get().recordProgress(record);
   },
-  
+
   recordProgress: (record) => {
     const { userProgress } = get();
     const updatedProgress = JSON.parse(JSON.stringify(userProgress)) as UserProgress;
-    
+
     updatedProgress.totalAttempted += 1;
     if (record.correct) updatedProgress.totalCorrect += 1;
-    
+
     updatedProgress.bySubject[record.subject].totalAttempted += 1;
     if (record.correct) updatedProgress.bySubject[record.subject].totalCorrect += 1;
-    
+
     updatedProgress.bySubject[record.subject].byGrade[record.grade].totalAttempted += 1;
     if (record.correct) {
       updatedProgress.bySubject[record.subject].byGrade[record.grade].totalCorrect += 1;
     }
-    
+
     updatedProgress.recentAttempts.unshift(record);
     if (updatedProgress.recentAttempts.length > 5) {
       updatedProgress.recentAttempts = updatedProgress.recentAttempts.slice(0, 5);
     }
-    
+
     localStorage.setItem('eduSphereProgress', JSON.stringify(updatedProgress));
     set({ userProgress: updatedProgress });
   },
-  
+
   hideBookCover: () => set({ showBookCover: false }),
   setActiveTab: (tab) => set({ activeTab: tab }),
 }));
