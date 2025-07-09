@@ -1,0 +1,46 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "learn": "Aprender",
+    "practice": "Practicar",
+    "settings": "Configuración",
+    "profile": "Perfil"
+  },
+  "subjects": {
+    "math": "Matemáticas",
+    "science": "Ciencias",
+    "english": "Inglés",
+    "history": "Historia",
+    "geography": "Geografía",
+    "physics": "Física",
+    "coding": "Programación"
+  },
+  "grades": {
+    "kindergarten": "Kinder",
+    "grade1-6": "Primaria",
+    "grade7-9": "Secundaria",
+    "grade10-12": "Preparatoria",
+    "matric": "Bachillerato"
+  },
+  "messages": {
+    "welcome": "¡Bienvenido a EduSphere AI!",
+    "correct": "¡Correcto!",
+    "incorrect": "Inténtalo de nuevo",
+    "hint": "Pista",
+    "explanation": "Explicación"
+  }
+}

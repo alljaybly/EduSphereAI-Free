@@ -500,18 +500,6 @@ const ARProblem: React.FC = () => {
     );
   }
 
-  // All features are free - no premium check needed
-
-        {/* Payment Modal */}
-        <PaymentModal 
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          onSuccess={handlePaymentSuccess}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 to-blue-900 relative overflow-hidden">
       {/* Header */}

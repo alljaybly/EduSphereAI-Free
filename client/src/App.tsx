@@ -15,26 +15,25 @@ import BoltBadge from './components/BoltBadge';
 import { useAppStore } from './store/useAppStore';
 
 // Initialize Sentry for error monitoring
-Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN || 'https://df5806fa12da19ec70b9390fe8ce70f6@o4508991941378048.ingest.de.sentry.io/4509513811951696',
-  environment: import.meta.env.MODE || 'development',
-  integrations: [
-    new Sentry.BrowserTracing({
-      routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-        React.useEffect,
-        useLocation,
-      ),
-    }),
-  ],
-  tracesSampleRate: 0.1,
-  beforeSend(event) {
-    // Filter out non-critical errors in development
-    if (import.meta.env.MODE === 'development') {
-      return event.level === 'error' ? event : null;
-    }
-    return event;
-  },
-});
+try {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN || 'https://df5806fa12da19ec70b9390fe8ce70f6@o4508991941378048.ingest.de.sentry.io/4509513811951696',
+    environment: import.meta.env.MODE || 'development',
+    integrations: [
+      new Sentry.BrowserTracing(),
+    ],
+    tracesSampleRate: import.meta.env.MODE === 'development' ? 0 : 0.1,
+    beforeSend(event) {
+      // Filter out non-critical errors in development
+      if (import.meta.env.MODE === 'development') {
+        return event.level === 'error' ? event : null;
+      }
+      return event;
+    },
+  });
+} catch (error) {
+  console.warn('Failed to initialize Sentry:', error);
+}
 
 function App() {
   const showBookCover = useAppStore((state) => state.showBookCover);
